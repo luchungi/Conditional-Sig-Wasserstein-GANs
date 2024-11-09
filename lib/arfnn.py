@@ -57,11 +57,17 @@ class ArFNN(nn.Module):
         x_generated = list()
         for t in range(z.shape[1]):
             z_t = z[:, t:t + 1]
+            # print(f'z_t.shape: {z_t.shape}')
             x_in = torch.cat([z_t, x_past.reshape(x_past.shape[0], 1, -1)], dim=-1)
+            # print(f'x_in.shape: {x_in.shape}')
             x_gen = self.network(x_in)
+            # print(f'x_gen.shape: {x_gen.shape}')
             x_past = torch.cat([x_past[:, 1:], x_gen], dim=1)
+            # print(f'x_past.shape: {x_past.shape}')
             x_generated.append(x_gen)
         x_fake = torch.cat(x_generated, dim=1)
+        # print(f'x_fake.shape: {x_fake.shape}')
+        # raise ValueError('stop here')
         return x_fake
 
 

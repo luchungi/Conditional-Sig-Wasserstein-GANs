@@ -38,7 +38,7 @@ def calibrate_sigw1_metric(config, x_future, x_past):
     return sigs_pred
 
 
-def sample_sig_fake(G, q, sig_config, x_past):
+def sample_sig_fake(G, q, sig_config, x_past, past_idx):
     x_past_mc = x_past.repeat(sig_config.mc_size, 1, 1).requires_grad_()
     x_fake = G.sample(q, x_past_mc)
     sigs_fake_future = sig_config.compute_sig_future(x_fake)
@@ -69,13 +69,13 @@ class SigCWGAN(BaseAlgo):
         # sample the least squares signature and the log-rtn condition
         sigs_pred = self.sigs_pred[random_indices].clone().to(self.device)
         x_past = self.x_past[random_indices].clone().to(self.device)
-        return sigs_pred, x_past
+        return sigs_pred, x_past, random_indices
 
     def step(self):
         self.G.train()
         self.G_optimizer.zero_grad()  # empty 'cache' of gradients
-        sigs_pred, x_past = self.sample_batch()
-        sigs_fake_ce, x_fake = sample_sig_fake(self.G, self.q, self.sig_config, x_past)
+        sigs_pred, x_past, past_idx = self.sample_batch()
+        sigs_fake_ce, x_fake = sample_sig_fake(self.G, self.q, self.sig_config, x_past, past_idx)
         loss = sigcwgan_loss(sigs_pred, sigs_fake_ce)
         loss.backward()
         total_norm = torch.nn.utils.clip_grad_norm_(self.G.parameters(), 10)

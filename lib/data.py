@@ -52,15 +52,22 @@ def get_equities_dataset(assets=('SPX', 'DJI'), with_vol=True):
     """
     oxford = pd.read_csv('./data/oxfordmanrealizedvolatilityindices.csv')
 
-    start = '2005-01-01 00:00:00+01:00'
-    end = '2020-01-01 00:00:00+01:00'
+    # start = '2005-01-01 00:00:00+01:00'
+    # end = '2020-01-01 00:00:00+01:00'
+    start = '1995-01-01' # start date for real data
+    end = '2018-09-19' # end date for real data
 
     if assets == ('SPX',):
-        df_asset = oxford[oxford['Symbol'] == '.SPX'].set_index(['Unnamed: 0'])  # [start:end]
-        price = np.log(df_asset[['close_price']].values)
+        df_asset = pd.read_csv('./data/spx_vix_df.csv', index_col=0, parse_dates=True) #[start:end]
+        price = np.log(df_asset[['SPX']].values)
         rtn = (price[1:] - price[:-1]).reshape(1, -1, 1)
-        vol = np.log(df_asset[['medrv']].values[-rtn.shape[1]:]).reshape(1, -1, 1)
-        data_raw = np.concatenate([rtn, vol], axis=-1)
+        data_raw = rtn
+
+        # df_asset = oxford[oxford['Symbol'] == '.SPX'].set_index(['Unnamed: 0'])  # [start:end]
+        # price = np.log(df_asset[['close_price']].values)
+        # rtn = (price[1:] - price[:-1]).reshape(1, -1, 1)
+        # vol = np.log(df_asset[['medrv']].values[-rtn.shape[1]:]).reshape(1, -1, 1)
+        # data_raw = np.concatenate([rtn, vol], axis=-1)
     elif assets == ('SPX', 'DJI'):
         df_spx = oxford[oxford['Symbol'] == '.SPX'].set_index(['Unnamed: 0'])[start:end]
         df_dji = oxford[oxford['Symbol'] == '.DJI'].set_index(['Unnamed: 0'])[start:end]
@@ -187,7 +194,11 @@ def get_data(data_type, p, q, **data_params):
         raise NotImplementedError('Dataset %s not valid' % data_type)
     assert x_real.shape[0] == 1
     x_real = rolling_window(x_real[0], p + q)
-    return x_real
+    # return x_real # NOTE: only the scaled data is returned
+    return pipeline, x_real_raw, x_real
+
+    # x_real = rolling_window(x_real[0], p + q)
+    # return x_real,x_real_raw # NOTE: change to return the raw data for the real path
 
 
 def download_man_ahl_dataset():

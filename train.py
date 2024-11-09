@@ -80,7 +80,8 @@ def get_dataset_configuration(dataset):
     if dataset == 'ECG':
         generator = [('id=100', dict(filenames=['100']))]
     elif dataset == 'STOCKS':
-        generator = (('_'.join(asset), dict(assets=asset)) for asset in [('SPX',), ('SPX', 'DJI')])
+        # generator = (('_'.join(asset), dict(assets=asset)) for asset in [('SPX',), ('SPX', 'DJI')])
+        generator = (('_'.join(asset), dict(assets=asset)) for asset in [('SPX',)])
     elif dataset == 'VAR':
         par1 = itertools.product([1], [(0.2, 0.8), (0.5, 0.8), (0.8, 0.8)])
         par2 = itertools.product([2], [(0.2, 0.8), (0.5, 0.8), (0.8, 0.8), (0.8, 0.2), (0.8, 0.5)])
@@ -143,18 +144,25 @@ if __name__ == '__main__':
     # Meta parameters
     parser.add_argument('-base_dir', default='./numerical_results', type=str)
     parser.add_argument('-use_cuda', action='store_true')
-    parser.add_argument('-device', default=1, type=int)
+    parser.add_argument('-device', default=0, type=int)
     parser.add_argument('-num_seeds', default=1, type=int)
     parser.add_argument('-initial_seed', default=0, type=int)
     #parser.add_argument('-datasets', default=['ARCH', 'STOCKS', 'ECG', 'VAR', ], nargs="+")
-    parser.add_argument('-datasets', default=['STOCKS', 'ARCH', 'VAR', ], nargs="+")
-    parser.add_argument('-algos', default=['SigCWGAN', 'GMMN', 'RCGAN', 'TimeGAN', 'RCWGAN', 'CWGAN',], nargs="+")
+    # parser.add_argument('-datasets', default=['STOCKS', 'ARCH', 'VAR', ], nargs="+")
+    parser.add_argument('-datasets', default=['STOCKS', ], nargs="+")
+    # parser.add_argument('-algos', default=['SigCWGAN', 'GMMN', 'RCGAN', 'TimeGAN', 'RCWGAN', 'CWGAN',], nargs="+")
+    parser.add_argument('-algos', default=['SigCWGAN', ], nargs="+")
 
 
     # Algo hyperparameters
-    parser.add_argument('-batch_size', default=200, type=int)
-    parser.add_argument('-p', default=3, type=int)
-    parser.add_argument('-q', default=3, type=int)
+    parser.add_argument('-batch_size', default=38, type=int)
+    parser.add_argument('-p', default=50, type=int) # number of past time steps
+    parser.add_argument('-q', default=250, type=int) # number of future time steps
+
+    # parser.add_argument('-batch_size', default=200, type=int)
+    # parser.add_argument('-p', default=3, type=int) # number of past time steps
+    # parser.add_argument('-q', default=3, type=int) # number of future time steps
+
     parser.add_argument('-hidden_dims', default=3 * (50,), type=tuple)
     parser.add_argument('-total_steps', default=1000, type=int)
 

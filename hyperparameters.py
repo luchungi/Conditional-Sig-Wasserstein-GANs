@@ -28,12 +28,19 @@ SIGCWGAN_CONFIGS = dict(
         sig_config_past=SignatureConfig(depth=2, augmentations=(Scale(0.5), Cumsum(), Concat())),
         sig_config_future=SignatureConfig(depth=2, augmentations=(Scale(0.5), Cumsum(), Concat())),
     ),
+    # NOTE: config for SPX adjusted to have more depth
     STOCKS_SPX=SigCWGANConfig(
         mc_size=1000,
-        sig_config_past=SignatureConfig(depth=3, augmentations=tuple([Scale(0.2), Cumsum(), AddLags(m=2), LeadLag()])),
-        sig_config_future=SignatureConfig(depth=3,
+        sig_config_past=SignatureConfig(depth=5, augmentations=tuple([Scale(0.2), Cumsum(), AddLags(m=2), LeadLag()])),
+        sig_config_future=SignatureConfig(depth=5,
                                           augmentations=tuple([Scale(0.2), Cumsum(), AddLags(m=2), LeadLag()])),
     ),
+    # STOCKS_SPX=SigCWGANConfig(
+    #     mc_size=1000,
+    #     sig_config_past=SignatureConfig(depth=3, augmentations=tuple([Scale(0.2), Cumsum(), AddLags(m=2), LeadLag()])),
+    #     sig_config_future=SignatureConfig(depth=3,
+    #                                       augmentations=tuple([Scale(0.2), Cumsum(), AddLags(m=2), LeadLag()])),
+    # ),
     STOCKS_SPX_DJI=SigCWGANConfig(
         mc_size=1000,
         sig_config_past=SignatureConfig(depth=2, augmentations=tuple([Scale(0.2), Cumsum(), AddLags(m=2), LeadLag()])),
